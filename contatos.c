@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 struct contatos{
     char nomes[100][128];
@@ -10,25 +11,64 @@ typedef struct contatos Contatos;
 Contatos agenda;
 int total = 0;
 
+void formatarTelefone(char *num){
+
+    char temp[32];
+
+    int tam = strlen(num);
+
+    if(tam == 11){
+        sprintf(temp,"(%c%c)%c%c%c%c%c-%c%c%c%c",
+        num[0],num[1],num[2],
+        num[3],num[4],num[5],num[6],num[7],
+        num[8],num[9],num[10]);
+
+        strcpy(num,temp);
+    }
+
+    if(tam == 12){
+        sprintf(temp,"(%c%c%c)%c%c%c%c%c-%c%c%c%c",
+        num[0],num[1],num[2],
+        num[3],num[4],num[5],num[6],num[7],
+        num[8],num[9],num[10],num[11]);
+
+        strcpy(num,temp);
+    }
+
+}
+
 void novoContato(){
+
+    if(total >= 100){
+        printf("Agenda cheia\n");
+        return;
+    }
+
     printf("Nome: ");
     scanf(" %[^\n]", agenda.nomes[total]);
 
-    printf("Telefone: ");
-    scanf(" %[^\n]", agenda.telefones[total]);
+    printf("Telefone (somente numeros): ");
+    scanf("%31s", agenda.telefones[total]);
+
+    formatarTelefone(agenda.telefones[total]);
 
     total++;
 }
 
 void exibirContatos(){
+
     for(int i = 0; i < total; i++){
+
         printf("\nContato %d\n", i+1);
         printf("Nome: %s\n", agenda.nomes[i]);
         printf("Telefone: %s\n", agenda.telefones[i]);
+
     }
+
 }
 
 void salvarArquivo(){
+
     FILE *f = fopen("contatos.csv","w");
 
     for(int i = 0; i < total; i++){
@@ -41,10 +81,10 @@ void salvarArquivo(){
 }
 
 void abrirArquivo(){
+
     FILE *f = fopen("contatos.csv","r");
 
     if(f == NULL){
-        printf("Arquivo nao encontrado\n");
         return;
     }
 
@@ -62,6 +102,8 @@ void abrirArquivo(){
 int main(){
 
     int opc;
+
+    abrirArquivo();
 
     do{
 
